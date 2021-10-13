@@ -1,21 +1,17 @@
-import { clamp, createElNS } from '@/utility'
+import { clamp, createElNS, addRandomnessWithRange } from '@/utility'
 import Wave from '@/wave'
 
 // default options
 const defaultOpts = {
-	count: {
-		value: 1,
-		range: [0, Infinity]
-	},
 	fills: {
 		value: ['rgb(0,0,0)']
 	},
 	rate: {
-		value: 1,
-		range: [0.1, 10]
+		value: 0.5,
+		range: [0.1, 5]
 	},
 	complexity: {
-		value: 1,
+		value: 6,
 		range: [1, 10]
 	},
 	randomVelocity: {
@@ -27,8 +23,16 @@ const defaultOpts = {
 		range: [0, 1]
 	},
 	wavelength: {
-		value: 1.5,
+		value: 9,
 		range: [1, 20]
+	},
+	randomComplexity: {
+		value: 0.3,
+		range: [0, 1]
+	},
+	randomRate: {
+		value: 0.5,
+		range: [0, 1]
 	}
 }
 
@@ -48,19 +52,35 @@ function waves(opts = {}) {
 		else this[k] = passedVal
 	}
 
+	// make randomRate somewhat logarithmic
+	this.randomRate *= 1 / defaultOpts.rate.range[1]
+
 	// initialize waves
 	this.waves = []
 
-	for (let i = 0; i < this.count; i++) {
-		const fill = this.fills[this.fills.length % i]
-		const wave = new Wave({
-			rate: this.rate,
-			complexity: this.complexity,
+	for (let i = 0; i < this.fills.length; i++) {
+		// non-randomized properties of individual wave
+		const props = {
 			randomVelocity: this.randomVelocity,
 			curviness: this.curviness,
 			wavelength: this.wavelength,
-			fill
+			fill: this.fills[i]
+		}
+
+		// add randomness to properties of individual waves
+		// based on properties' default ranges and passed (or default) randomness coefficients
+		// and add them to props object
+		Array('complexity', 'rate').forEach(prop => {
+			props[prop] = addRandomnessWithRange(
+				this[prop],
+				this['random' + prop.charAt(0).toUpperCase() + prop.slice(1)],
+				defaultOpts[prop].range[0],
+				defaultOpts[prop].range[1]
+			)
 		})
+
+		// create a wave based on props
+		const wave = new Wave(props)
 
 		this.waves.push(wave)
 	}
@@ -91,6 +111,8 @@ waves.prototype = {
 
 		// run the animation
 		this.play()
+
+		this.mounted = true
 
 		return this
 	},
@@ -123,7 +145,7 @@ waves.prototype = {
 		this.waves.forEach(wave => wave.animationStep())
 
 		// request next frame
-		this.animation = window.requestAnimationFrame(
+		this.animation.request = window.requestAnimationFrame(
 			this.animationStep.bind(this)
 		)
 	}

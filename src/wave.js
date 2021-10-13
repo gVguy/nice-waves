@@ -5,7 +5,7 @@ export default class Wave {
 	constructor(props) {
 		// assign passed props
 		this.rate = props.rate
-		this.complexity = props.complexity
+		this.complexity = Math.round(props.complexity)
 		this.randomVelocity = props.randomVelocity
 		this.curviness = props.curviness
 		this.wavelength = props.wavelength
@@ -20,10 +20,11 @@ export default class Wave {
 		// create individual wave svg elements
 		this.svg = createElNS('svg', {
 			width: this.period * 2,
-			x: 0
+			x: -random(0, this.period * 0.5)
 		})
 		this.path = createElNS('path', {
-			d: this.pathString
+			d: this.pathString,
+			fill: this.fill
 		})
 
 		// nest the svg elements
