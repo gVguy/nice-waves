@@ -33,6 +33,10 @@ const defaultOpts = {
 	randomRate: {
 		value: 0.5,
 		range: [0, 1]
+	},
+	randomOffset: {
+		value: 1,
+		range: [0, 1]
 	}
 }
 
@@ -64,7 +68,8 @@ function waves(opts = {}) {
 			randomVelocity: this.randomVelocity,
 			curviness: this.curviness,
 			wavelength: this.wavelength,
-			fill: this.fills[i]
+			fill: this.fills[i],
+			randomOffset: this.randomOffset
 		}
 
 		// add randomness to properties of individual waves

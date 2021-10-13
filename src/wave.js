@@ -4,12 +4,12 @@ import { stringifyPath, translatePath } from '@/path'
 export default class Wave {
 	constructor(props) {
 		// assign passed props
-		this.rate = props.rate
+		for (let prop in props) {
+			this[prop] = props[prop]
+		}
+
+		// complexity should be a round int
 		this.complexity = Math.round(props.complexity)
-		this.randomVelocity = props.randomVelocity
-		this.curviness = props.curviness
-		this.wavelength = props.wavelength
-		this.fill = props.fill
 
 		// actual path length (root svg viewbox width is 100)
 		this.period = this.wavelength * 100
@@ -20,7 +20,7 @@ export default class Wave {
 		// create individual wave svg elements
 		this.svg = createElNS('svg', {
 			width: this.period * 2,
-			x: -random(0, this.period * 0.5)
+			x: random(0, this.period * 0.5) * -this.randomOffset
 		})
 		this.path = createElNS('path', {
 			d: this.pathString,

@@ -84,6 +84,18 @@
 				/>
 				<p>{{ wavesOpts.randomRate }}</p>
 			</div>
+			<div class="setup-block">
+				<h3>randomOffset</h3>
+				<input
+					type="range"
+					min="0"
+					max="1"
+					step=".1"
+					v-model.number="wavesOpts['randomOffset']"
+					@change="mountWaves"
+				/>
+				<p>{{ wavesOpts.randomOffset }}</p>
+			</div>
 			<div class="setup-block main">
 				<button @click="playStopHandler">{{ playStopText }}</button>
 			</div>
@@ -113,7 +125,8 @@ export default {
 				rate: 0.5,
 				fills: [{ id: 1, color: 'rgb(19, 158, 173)' }],
 				randomComplexity: 0.3,
-				randomRate: 0.5
+				randomRate: 0.5,
+				randomOffset: 1
 			}
 		}
 	},
