@@ -1,5 +1,5 @@
-import { createElNS, random } from '@/utility'
-import { stringifyPath, translatePath } from '@/path'
+import { createElNS, random, addRandomnessWithRange } from '@/utility'
+import { stringifyPath, translatePath, morphPathVelocity } from '@/path'
 
 export default class Wave {
 	constructor(props) {
@@ -15,41 +15,67 @@ export default class Wave {
 		this.period = this.wavelength * 100
 
 		// generate wave data object
-		this.pathData = getWave.call(this)
+		this.path = getWave.call(this)
+
+		// and turn it to svg string (double length)
+		this.pathDoubleString = this.path.clone().double().string
+
+		// calculate wave offset
+		// max offset is the distance between two high points
+		const maxOffset = this.period / this.complexity
+		let offset = this.offset * this.id * maxOffset
+		offset = addRandomnessWithRange(offset, this.randomOffset, 0, maxOffset)
 
 		// create individual wave svg elements
-		this.svg = createElNS('svg', {
+		this.svgEl = createElNS('svg', {
 			width: this.period * 2,
-			x: random(0, this.period * 0.5) * -this.randomOffset
+			x: -offset
 		})
-		this.path = createElNS('path', {
-			d: this.pathString,
+		this.pathEl = createElNS('path', {
+			d: this.pathDoubleString,
 			fill: this.fill
 		})
 
 		// nest the svg elements
-		this.svg.append(this.path)
-	}
+		this.svgEl.append(this.pathEl)
 
-	// transforms path data to svg string format
-	get pathString() {
-		return stringifyPath(this.pathData)
+		// if wave morphing is enabled
+		// create a morph TO path
+		// and add animate node to svg
+		if (this.swayRate) {
+			this.animateEl = createElNS('animate', {
+				attributeName: 'd',
+				values:
+					this.pathDoubleString +
+					';' +
+					this.path.clone().morph().double().string +
+					';' +
+					this.pathDoubleString,
+				dur: 10.3 - 10 * this.swayRate + 's',
+				repeatCount: 'indefinite',
+				calcMode: 'spline',
+				keyTimes: '0; 0.5; 1',
+				keySplines: '0.4 0 0.6 1;'.repeat(2)
+			})
+
+			this.pathEl.append(this.animateEl)
+		}
 	}
 
 	// updates x offset value of the wave
 	set x(val) {
-		this.svg.setAttribute('x', val)
+		this.svgEl.setAttribute('x', val)
 	}
 
 	// returns x offset value of the wave
 	get x() {
-		return Number(this.svg.getAttribute('x'))
+		return Number(this.svgEl.getAttribute('x'))
 	}
 
 	// called from the root animation loop
 	animationStep() {
 		// calculate new x value
-		let x = this.x - this.rate
+		let x = this.x - this.flowRate
 
 		// if new x will make the wave scroll too far
 		// use the similar scroll position of the first period instead
@@ -63,7 +89,7 @@ export default class Wave {
 function getWave() {
 	// initialize an array based on complexity
 	// containing x coordinates of high and low points
-	// from first high point to 100 (0 will be added manually later)
+	// from first high point to period length (0 will be added manually later)
 	const points = this.complexity * 2
 	const step = this.period / points
 	let data = Array(points)
@@ -78,8 +104,8 @@ function getWave() {
 		// alternate high and low points
 		// and add randomness to y
 		// unless processing last point, which should remain unrandomized
-		let rand = random(0, 46) * this.randomVelocity
-		if (x != this.period) {
+		let rand = random(0, 23) * this.randomVelocity
+		if (Math.round(x) != Math.round(this.period)) {
 			y = y < 25 ? 48 - rand : 2 + rand
 		} else {
 			y = 48
@@ -100,29 +126,61 @@ function getWave() {
 		return r
 	})
 
-	// make path twice its length for scrolling
-	data.push(...translatePath(data, 'x', data[data.length - 1].points[2].x))
-
-	// add starting point
-	data.unshift({
-		cmd: 'M',
-		points: [{ x: 0, y: 48 }]
+	// add open and close
+	// return Path object
+	return new Path({
+		open: [
+			{
+				cmd: 'M',
+				points: [{ x: 0, y: 48 }]
+			}
+		],
+		curve: data,
+		close: [
+			{
+				cmd: 'V',
+				points: [{ y: 50 }]
+			},
+			{
+				cmd: 'H',
+				points: [{ y: 0 }]
+			},
+			{
+				cmd: 'Z'
+			}
+		]
 	})
+}
 
-	// close path
-	data.push(
-		{
-			cmd: 'V',
-			points: [{ y: 50 }]
-		},
-		{
-			cmd: 'H',
-			points: [{ y: 0 }]
-		},
-		{
-			cmd: 'Z'
-		}
-	)
+class Path {
+	constructor(data) {
+		this.open = data.open
+		this.curve = data.curve
+		this.close = data.close
+	}
 
-	return data
+	double() {
+		this.curve = this.curve.concat(
+			translatePath(
+				this.curve,
+				'x',
+				this.curve[this.curve.length - 1].points[2].x
+			),
+			this.close
+		)
+		return this
+	}
+
+	morph() {
+		this.curve = morphPathVelocity(this.curve)
+		return this
+	}
+
+	clone() {
+		return new Path(this)
+	}
+
+	get string() {
+		return stringifyPath(this.open.concat(this.curve, this.close))
+	}
 }

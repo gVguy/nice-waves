@@ -1,44 +1,8 @@
 import { clamp, createElNS, addRandomnessWithRange } from '@/utility'
+import defaultOpts from '@/default-opts'
 import Wave from '@/wave'
 
 // default options
-const defaultOpts = {
-	fills: {
-		value: ['rgb(0,0,0)']
-	},
-	rate: {
-		value: 0.5,
-		range: [0.1, 5]
-	},
-	complexity: {
-		value: 6,
-		range: [1, 10]
-	},
-	randomVelocity: {
-		value: 0.5,
-		range: [0, 1]
-	},
-	curviness: {
-		value: 0.4,
-		range: [0, 1]
-	},
-	wavelength: {
-		value: 9,
-		range: [1, 20]
-	},
-	randomComplexity: {
-		value: 0.3,
-		range: [0, 1]
-	},
-	randomRate: {
-		value: 0.5,
-		range: [0, 1]
-	},
-	randomOffset: {
-		value: 1,
-		range: [0, 1]
-	}
-}
 
 function waves(opts = {}) {
 	// if called as function return an instance
@@ -56,8 +20,9 @@ function waves(opts = {}) {
 		else this[k] = passedVal
 	}
 
-	// make randomRate somewhat logarithmic
-	this.randomRate *= 1 / defaultOpts.rate.range[1]
+	// make some props somewhat logarithmic
+	this.randomFlowRate *= 1 / defaultOpts.flowRate.range[1]
+	this.randomSwayRate *= 1 / defaultOpts.swayRate.range[1]
 
 	// initialize waves
 	this.waves = []
@@ -65,17 +30,20 @@ function waves(opts = {}) {
 	for (let i = 0; i < this.fills.length; i++) {
 		// non-randomized properties of individual wave
 		const props = {
+			id: i + 1,
 			randomVelocity: this.randomVelocity,
+			offset: this.offset,
 			curviness: this.curviness,
 			wavelength: this.wavelength,
 			fill: this.fills[i],
-			randomOffset: this.randomOffset
+			randomOffset: this.randomOffset,
+			swayRate: this.swayRate
 		}
 
 		// add randomness to properties of individual waves
 		// based on properties' default ranges and passed (or default) randomness coefficients
 		// and add them to props object
-		Array('complexity', 'rate').forEach(prop => {
+		Array('complexity', 'flowRate', 'swayRate').forEach(prop => {
 			props[prop] = addRandomnessWithRange(
 				this[prop],
 				this['random' + prop.charAt(0).toUpperCase() + prop.slice(1)],
@@ -109,7 +77,7 @@ waves.prototype = {
 		el.innerHTML = ''
 
 		// nest all waves to the root svg
-		this.waves.forEach(wave => svg.append(wave.svg))
+		this.waves.forEach(wave => svg.append(wave.svgEl))
 
 		// append the root svg
 		el.append(svg)

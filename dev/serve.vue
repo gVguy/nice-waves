@@ -46,17 +46,17 @@
 				<p>{{ wavesOpts.wavelength }}</p>
 			</div>
 			<div class="setup-block">
-				<h3>rate</h3>
+				<h3>flowRate</h3>
 				<input
 					type="range"
 					min="0.1"
 					max="5"
 					step=".1"
-					v-model.number="wavesOpts['rate']"
+					v-model.number="wavesOpts['flowRate']"
 					:disabled="!waves.animation.isPlaying"
 					@change="mountWaves"
 				/>
-				<p>{{ wavesOpts.rate }}</p>
+				<p>{{ wavesOpts.flowRate }}</p>
 			</div>
 		</div>
 		<div class="setup">
@@ -73,16 +73,16 @@
 				<p>{{ wavesOpts.randomComplexity }}</p>
 			</div>
 			<div class="setup-block">
-				<h3>randomRate</h3>
+				<h3>randomFlowRate</h3>
 				<input
 					type="range"
 					min="0"
 					max="1"
 					step=".1"
-					v-model.number="wavesOpts['randomRate']"
+					v-model.number="wavesOpts['randomFlowRate']"
 					@change="mountWaves"
 				/>
-				<p>{{ wavesOpts.randomRate }}</p>
+				<p>{{ wavesOpts.randomFlowRate }}</p>
 			</div>
 			<div class="setup-block">
 				<h3>randomOffset</h3>
@@ -122,10 +122,10 @@ export default {
 			wavesOpts: {
 				complexity: 6,
 				wavelength: 9,
-				rate: 0.5,
+				flowRate: 0.5,
 				fills: [{ id: 1, color: 'rgb(19, 158, 173)' }],
 				randomComplexity: 0.3,
-				randomRate: 0.5,
+				randomFlowRate: 0.5,
 				randomOffset: 1
 			}
 		}
