@@ -8,7 +8,7 @@
 			<div class="setup-block main">
 				<h3>fills</h3>
 				<div
-					v-for="(fill, i) in wavesOpts.fills"
+					v-for="(fill, i) in fills"
 					class="color-input-wrapper"
 					:key="'fill_' + fill.id"
 				>
@@ -19,95 +19,45 @@
 				</div>
 				<button class="add-fill" @click="addFill">&#x2295;</button>
 			</div>
-		</div>
-		<div class="setup">
-			<div class="setup-block">
-				<h3>complexity</h3>
+			<div
+				class="setup-block"
+				v-for="opt in Object.keys(wavesOpts)"
+				:key="'setup_' + opt"
+			>
+				<h3>{{ opt }}</h3>
 				<input
 					type="range"
-					min="1"
-					max="10"
-					step="1"
-					v-model.number="wavesOpts['complexity']"
+					:min="wavesOpts[opt].range[0]"
+					:max="wavesOpts[opt].range[1]"
+					:step="wavesOpts[opt].range[1] > 5 ? 1 : 0.01"
+					v-model.number="wavesOpts[opt]['value']"
 					@change="mountWaves"
 				/>
-				<p>{{ wavesOpts.complexity }}</p>
-			</div>
-			<div class="setup-block">
-				<h3>wavelength</h3>
-				<input
-					type="range"
-					min="1"
-					max="20"
-					step=".1"
-					v-model.number="wavesOpts['wavelength']"
-					@change="mountWaves"
-				/>
-				<p>{{ wavesOpts.wavelength }}</p>
-			</div>
-			<div class="setup-block">
-				<h3>flowRate</h3>
-				<input
-					type="range"
-					min="0.1"
-					max="5"
-					step=".1"
-					v-model.number="wavesOpts['flowRate']"
-					:disabled="!waves.animation.isPlaying"
-					@change="mountWaves"
-				/>
-				<p>{{ wavesOpts.flowRate }}</p>
-			</div>
-		</div>
-		<div class="setup">
-			<div class="setup-block">
-				<h3>randomComplexity</h3>
-				<input
-					type="range"
-					min="0"
-					max="1"
-					step=".1"
-					v-model.number="wavesOpts['randomComplexity']"
-					@change="mountWaves"
-				/>
-				<p>{{ wavesOpts.randomComplexity }}</p>
-			</div>
-			<div class="setup-block">
-				<h3>randomFlowRate</h3>
-				<input
-					type="range"
-					min="0"
-					max="1"
-					step=".1"
-					v-model.number="wavesOpts['randomFlowRate']"
-					@change="mountWaves"
-				/>
-				<p>{{ wavesOpts.randomFlowRate }}</p>
-			</div>
-			<div class="setup-block">
-				<h3>randomOffset</h3>
-				<input
-					type="range"
-					min="0"
-					max="1"
-					step=".1"
-					v-model.number="wavesOpts['randomOffset']"
-					@change="mountWaves"
-				/>
-				<p>{{ wavesOpts.randomOffset }}</p>
+				<p>{{ wavesOpts[opt].value }}</p>
 			</div>
 			<div class="setup-block main">
-				<button @click="playStopHandler">{{ playStopText }}</button>
+				<button class="control-btn" @click="playStopHandler">
+					{{ playStopText }}
+				</button>
+				<button class="control-btn" @click="showOpts = true">
+					Show opts
+				</button>
 			</div>
 		</div>
 	</div>
 	<div class="waves" ref="wavesContainer"></div>
+	<div v-show="showOpts" class="popup-opts" @click="showOpts = false">
+		<div class="code" @click.stop>
+			<pre>{{ JSON.stringify(opts, null, 1) }}</pre>
+		</div>
+	</div>
 </template>
 
 <script>
 import waves from '@/main'
 import ColorInput from 'vue-color-input'
 import { random } from '@/utility'
+import defaultOpts from '@/default-opts'
 
 export default {
 	name: 'ServeDev',
@@ -119,15 +69,9 @@ export default {
 					isPlaying: null
 				}
 			},
-			wavesOpts: {
-				complexity: 6,
-				wavelength: 9,
-				flowRate: 0.5,
-				fills: [{ id: 1, color: 'rgb(19, 158, 173)' }],
-				randomComplexity: 0.3,
-				randomFlowRate: 0.5,
-				randomOffset: 1
-			}
+			fills: {},
+			showOpts: false,
+			wavesOpts: {}
 		}
 	},
 	computed: {
@@ -135,8 +79,14 @@ export default {
 			return this.waves.animation.isPlaying ? 'Stop' : 'Play'
 		},
 		opts() {
-			const fills = this.wavesOpts.fills.map(f => f.color)
-			return { ...this.wavesOpts, fills }
+			const fills = this.fills.map(f => f.color)
+			const opts = [['fills', fills]].concat(
+				Object.keys(this.wavesOpts).map(key => [
+					key,
+					this.wavesOpts[key].value
+				])
+			)
+			return Object.fromEntries(opts)
 		}
 	},
 	methods: {
@@ -159,19 +109,44 @@ export default {
 			const [r, g, b] = Array(3)
 				.fill(null)
 				.map(() => random(0, 190))
-			this.wavesOpts.fills.push({
-				id: this.wavesOpts.fills.length + 1,
+			this.fills.push({
+				id: this.fills.length + 1,
 				color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)'
 			})
 			this.mountWaves()
 		},
 		removeFill(i) {
-			this.wavesOpts.fills.splice(i, 1)
+			this.fills.splice(i, 1)
 			this.mountWaves()
 		}
 	},
 	created() {
-		// this.waves = {}
+		const custom = {
+			fills: [
+				'rgb(19, 158, 173)',
+				'rgba(121, 144, 65, 0.5)',
+				'rgba(35, 21, 103, 0.5)'
+			],
+			flowRate: 0.8,
+			swayRate: 0.6,
+			wavelength: 14,
+			complexity: 6,
+			curviness: 0.8,
+			offset: 0,
+			randomFlowRate: 0,
+			randomComplexity: 0,
+			randomVelocity: 0.05,
+			swayVelocity: 0.42,
+			randomOffset: 0
+		}
+		this.wavesOpts = JSON.parse(JSON.stringify(defaultOpts))
+		Object.keys(custom).forEach(k => (this.wavesOpts[k].value = custom[k]))
+		delete this.wavesOpts.fills
+
+		this.fills = custom.fills.map((f, i) => ({
+			id: i + 1,
+			color: f
+		}))
 	},
 	mounted() {
 		this.mountWaves()
@@ -185,6 +160,8 @@ export default {
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300&display=swap');
 body {
 	background: #fbfbfb;
+	margin: 0;
+	padding: 0;
 }
 #app {
 	font-family: 'Montserrat', sans-serif;
@@ -194,6 +171,7 @@ body {
 	align-items: center;
 	text-align: center;
 	width: 100%;
+	min-height: 100vh;
 }
 
 .waves {
@@ -227,10 +205,15 @@ h1 {
 	p {
 		margin: 0;
 	}
-}
-.setup-block h3 {
-	margin: 0;
-	white-space: nowrap;
+	h3 {
+		margin: 0;
+		white-space: nowrap;
+	}
+	.control-btn {
+		font-size: 16px;
+		font-family: inherit;
+		margin: 3px;
+	}
 }
 .color-input {
 	vertical-align: middle;
@@ -277,6 +260,24 @@ h1 {
 	transition: color 0.3s;
 	&:hover {
 		color: #0f0f0f;
+	}
+}
+.popup-opts {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(15, 15, 15, 0.4);
+	.code {
+		padding: 15px;
+		background: #fbfbfb;
+		box-shadow: 0px 2px 5px rgba(15, 15, 15, 0.4);
+		text-align: left;
+		pre {
+			font-family: 'Source Code Pro', monospace;
+		}
 	}
 }
 </style>

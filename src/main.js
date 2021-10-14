@@ -24,6 +24,12 @@ function waves(opts = {}) {
 	this.randomFlowRate *= 1 / defaultOpts.flowRate.range[1]
 	this.randomSwayRate *= 1 / defaultOpts.swayRate.range[1]
 
+	// curviness should be half its value
+	this.curviness *= 0.5
+
+	// offset should depend on waves count
+	this.offset /= this.fills.length
+
 	// initialize waves
 	this.waves = []
 
@@ -37,19 +43,25 @@ function waves(opts = {}) {
 			wavelength: this.wavelength,
 			fill: this.fills[i],
 			randomOffset: this.randomOffset,
-			swayRate: this.swayRate
+			swayRate: this.swayRate,
+			swayVelocity: this.swayVelocity
 		}
 
 		// add randomness to properties of individual waves
 		// based on properties' default ranges and passed (or default) randomness coefficients
 		// and add them to props object
 		Array('complexity', 'flowRate', 'swayRate').forEach(prop => {
-			props[prop] = addRandomnessWithRange(
-				this[prop],
-				this['random' + prop.charAt(0).toUpperCase() + prop.slice(1)],
-				defaultOpts[prop].range[0],
-				defaultOpts[prop].range[1]
-			)
+			props[prop] =
+				this[prop] > 0
+					? addRandomnessWithRange(
+							this[prop],
+							this[
+								'random' + prop.charAt(0).toUpperCase() + prop.slice(1)
+							],
+							defaultOpts[prop].range[0],
+							defaultOpts[prop].range[1]
+					  )
+					: 0
 		})
 
 		// create a wave based on props
@@ -92,7 +104,7 @@ waves.prototype = {
 
 	play() {
 		// if already playing do nothing
-		if (this.animation.isPlaying) return this
+		if (this.animation.isPlaying || !this.flowRate) return this
 
 		this.animation.request = window.requestAnimationFrame(
 			this.animationStep.bind(this)

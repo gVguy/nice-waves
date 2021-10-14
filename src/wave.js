@@ -24,7 +24,12 @@ export default class Wave {
 		// max offset is the distance between two high points
 		const maxOffset = this.period / this.complexity
 		let offset = this.offset * this.id * maxOffset
-		offset = addRandomnessWithRange(offset, this.randomOffset, 0, maxOffset)
+		offset = addRandomnessWithRange(
+			offset,
+			this.randomOffset,
+			0,
+			maxOffset * 2
+		)
 
 		// create individual wave svg elements
 		this.svgEl = createElNS('svg', {
@@ -42,16 +47,17 @@ export default class Wave {
 		// if wave morphing is enabled
 		// create a morph TO path
 		// and add animate node to svg
+		const swayDuration = 20.3 - 20 * this.swayRate
 		if (this.swayRate) {
 			this.animateEl = createElNS('animate', {
 				attributeName: 'd',
 				values:
 					this.pathDoubleString +
 					';' +
-					this.path.clone().morph().double().string +
+					this.path.clone().morph(this.swayVelocity).double().string +
 					';' +
 					this.pathDoubleString,
-				dur: 10.3 - 10 * this.swayRate + 's',
+				dur: swayDuration + 's',
 				repeatCount: 'indefinite',
 				calcMode: 'spline',
 				keyTimes: '0; 0.5; 1',
@@ -171,8 +177,8 @@ class Path {
 		return this
 	}
 
-	morph() {
-		this.curve = morphPathVelocity(this.curve)
+	morph(v = 1) {
+		this.curve = morphPathVelocity(this.curve, v)
 		return this
 	}
 
