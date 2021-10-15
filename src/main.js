@@ -22,9 +22,11 @@ function waves(opts = {}) {
 
 	// make some props somewhat logarithmic
 	this.randomFlowRate *= 1 / defaultOpts.flowRate.range[1]
+	this.randomSwayRate *= 1 / defaultOpts.swayRate.range[1]
 
-	// curviness should be half its value
+	// some props should be half its value
 	this.curviness *= 0.5
+	this.randomSwayRate *= 0.5
 
 	// offset should depend on waves count
 	this.offset /= this.fills.length
@@ -36,7 +38,7 @@ function waves(opts = {}) {
 		// non-randomized properties of individual wave
 		const props = {
 			id: i + 1,
-			randomVelocity: this.randomVelocity,
+			randomHeight: this.randomHeight,
 			offset: this.offset,
 			curviness: this.curviness,
 			wavelength: this.wavelength,
@@ -49,7 +51,7 @@ function waves(opts = {}) {
 		// add randomness to properties of individual waves
 		// based on properties' default ranges and passed (or default) randomness coefficients
 		// and add them to props object
-		Array('complexity', 'flowRate').forEach(prop => {
+		Array('complexity', 'flowRate', 'swayRate').forEach(prop => {
 			props[prop] =
 				this[prop] > 0
 					? addRandomnessWithRange(
@@ -76,7 +78,19 @@ function waves(opts = {}) {
 }
 
 waves.prototype = {
-	mount(el) {
+	mount(el = '#waves') {
+		if (typeof el == 'string') {
+			// called with a selector string
+			// or using default #waves
+			el = document.querySelector(el)
+		}
+
+		if (!el || el.ELEMENT_NODE !== 1) {
+			// cant find a valid mount point
+			console.error("waves: can't mount")
+			return false
+		}
+
 		const svg = createElNS('svg', {
 			viewBox: '0 0 100 50',
 			width: '100%',
@@ -102,12 +116,25 @@ waves.prototype = {
 	},
 
 	play() {
-		// if already playing do nothing
-		if (this.animation.isPlaying || !this.flowRate) return this
-
-		this.animation.request = window.requestAnimationFrame(
-			this.animationStep.bind(this)
+		// if already playing
+		// or there animation rates of both flow and sway are 0
+		if (
+			this.animation.isPlaying ||
+			(!this.flowRate && (!this.swayRate || !this.swayVelocity))
 		)
+			return this
+
+		// start flow animation
+		if (this.flowRate) {
+			this.animation.request = window.requestAnimationFrame(
+				this.animationStep.bind(this)
+			)
+		}
+
+		// start sway animation
+		if (this.swayRate) {
+			this.waves.forEach(wave => wave.svgEl.unpauseAnimations())
+		}
 
 		this.animation.isPlaying = true
 

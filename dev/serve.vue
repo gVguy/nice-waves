@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<h1>js-svg-waves demo</h1>
+		<h1>svg-waves</h1>
 		<h3>
 			<a class="docsLink" href="#">Docs</a>
 		</h3>
@@ -13,7 +13,11 @@
 					:key="'fill_' + fill.id"
 				>
 					<color-input v-model="fill.color" @change="mountWaves" />
-					<button v-if="i != 0" class="remove-fill" @click="removeFill(i)">
+					<button
+						v-if="fills.length != 1"
+						class="remove-fill"
+						@click="removeFill(i)"
+					>
 						&#x2715;
 					</button>
 				</div>
@@ -31,7 +35,8 @@
 					:max="wavesOpts[opt].range[1]"
 					:step="wavesOpts[opt].range[1] > 5 ? 1 : 0.01"
 					v-model.number="wavesOpts[opt]['value']"
-					@change="mountWaves"
+					:name="opt"
+					@change="parameterChangeHandler"
 				/>
 				<p>{{ wavesOpts[opt].value }}</p>
 			</div>
@@ -42,10 +47,17 @@
 				<button class="control-btn" @click="showOptsHandler">
 					Show opts
 				</button>
+				<button
+					class="control-btn"
+					@click="mountWaves"
+					v-tooltip="'Generate new instance with same options'"
+				>
+					Re-mount
+				</button>
 			</div>
 		</div>
 	</div>
-	<div class="waves" ref="wavesContainer"></div>
+	<div id="waves"></div>
 	<div v-show="showOpts" class="popup-opts" @pointerdown="showOptsHandler">
 		<div class="code" @pointerdown.stop>
 			<pre><code class="lang-js">{{ optsString }}</code></pre>
@@ -75,7 +87,11 @@ export default {
 			},
 			fills: [],
 			showOpts: false,
-			wavesOpts: {}
+			wavesOpts: {
+				flowRate: 0,
+				swayRate: 0,
+				swayVelocity: 0
+			}
 		}
 	},
 	computed: {
@@ -93,23 +109,39 @@ export default {
 			return Object.fromEntries(opts)
 		},
 		optsString() {
-			const opts = JSON.stringify(this.opts, null, 2).replace(
-				/"(\S*)":/gm,
-				'$1:'
-			)
+			let opts = this.opts
+
+			Object.keys(opts).forEach(key => {
+				if (
+					JSON.stringify(opts[key]) ==
+					JSON.stringify(defaultOpts[key].value)
+				)
+					delete opts[key]
+			})
+
+			opts = JSON.stringify(opts, null, 2).replace(/"(\S*)":/gm, '$1:')
+
 			return `const opts = ${opts}
 
-waves(opts).mount('#waves')${this.waves.animation.isPlaying ? '' : '.stop()'}`
+waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 		}
 	},
 	methods: {
-		mountWaves() {
-			const mountPoint = this.$refs.wavesContainer
+		parameterChangeHandler(e) {
+			let forcePlay = false
+			if (
+				['flowRate', 'swayRate'].includes(e.target.name) &&
+				e.target.value > 0
+			)
+				forcePlay = true
+			this.mountWaves(forcePlay)
+		},
+		mountWaves(forcePlay) {
 			const wasPlaying = this.waves.mounted
 				? this.waves.animation.isPlaying
 				: true
-			this.waves = waves(this.opts).mount(mountPoint)
-			if (!wasPlaying) this.waves.stop()
+			this.waves = waves(this.opts).mount().stop()
+			if (!wasPlaying && !forcePlay) this.waves.stop()
 		},
 		playStopHandler() {
 			if (this.waves.animation.isPlaying) {
@@ -139,36 +171,34 @@ waves(opts).mount('#waves')${this.waves.animation.isPlaying ? '' : '.stop()'}`
 	},
 	created() {
 		const custom = {
-			fills: [
-				'rgb(19, 158, 173)',
-				'rgba(121, 144, 65, 0.5)',
-				'rgba(35, 21, 103, 0.5)'
-			],
-			flowRate: 0.8,
+			flowRate: 0.6,
 			swayRate: 0.6,
 			wavelength: 14,
-			complexity: 6,
-			curviness: 0.8,
-			offset: 0,
-			randomFlowRate: 0,
-			randomComplexity: 0,
-			randomVelocity: 0.05,
-			swayVelocity: 0.42,
-			randomOffset: 0
+			randomHeight: 0.05,
+			swayVelocity: 0.42
 		}
 		this.wavesOpts = JSON.parse(JSON.stringify(defaultOpts))
 		Object.keys(custom).forEach(k => (this.wavesOpts[k].value = custom[k]))
 		delete this.wavesOpts.fills
 
-		this.fills = custom.fills.map((f, i) => ({
+		const fills = custom.fills ? custom.fills : defaultOpts.fills.value
+
+		this.fills = fills.map((f, i) => ({
 			id: i + 1,
 			color: f
 		}))
+
+		// props template positions matrix
+		// prettier-ignore
+		// const propsLayout = [
+		// 	[ 'flowRate',       'velocity',     'wavelength', 'offset',       'curviness'],
+		// 	[ 'randomFlowRate', 'swayVelocity', 'complexity', 'randomOffset', ''],
+		// 	[]
+		// ]
 	},
 	mounted() {
 		this.mountWaves()
-	},
-	watch: {}
+	}
 }
 </script>
 
@@ -179,9 +209,9 @@ body {
 	background: #fbfbfb;
 	margin: 0;
 	padding: 0;
+	font-family: 'Montserrat', sans-serif;
 }
 #app {
-	font-family: 'Montserrat', sans-serif;
 	font-size: 16px;
 	display: flex;
 	flex-direction: column;
@@ -191,7 +221,7 @@ body {
 	min-height: 100vh;
 }
 
-.waves {
+#waves {
 	position: absolute;
 	bottom: 0;
 	width: 100%;
@@ -292,9 +322,14 @@ h1 {
 		background: #fbfbfb;
 		box-shadow: 0px 2px 5px rgba(15, 15, 15, 0.4);
 		text-align: left;
-		pre {
+		code {
 			font-family: 'Source Code Pro', monospace;
 		}
 	}
+}
+.tooltip {
+	background: rgba(1, 1, 1, 0.5);
+	color: #fbfbfb;
+	font-family: 'Montserrat', sans-serif;
 }
 </style>

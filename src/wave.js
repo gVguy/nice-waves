@@ -110,7 +110,7 @@ function getWave() {
 		// alternate high and low points
 		// and add randomness to y
 		// unless processing last point, which should remain unrandomized
-		let rand = random(0, 23) * this.randomVelocity
+		let rand = random(0, 23) * this.randomHeight
 		if (Math.round(x) != Math.round(this.period)) {
 			y = y < 25 ? 48 - rand : 2 + rand
 		} else {

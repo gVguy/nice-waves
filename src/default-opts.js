@@ -1,9 +1,9 @@
 export default {
 	fills: {
-		value: ['rgb(19, 158, 173)']
+		value: ['rgba(1, 1, 1, 0.5)', 'rgba(1, 1, 1, 0.4)', 'rgba(1, 1, 1, 0.2)']
 	},
 	flowRate: {
-		value: 0.5,
+		value: 0.6,
 		range: [0, 5]
 	},
 	swayRate: {
@@ -34,12 +34,16 @@ export default {
 		value: 0,
 		range: [0, 1]
 	},
-	randomVelocity: {
+	randomHeight: {
 		value: 0.7,
 		range: [0, 1]
 	},
 	swayVelocity: {
 		value: 1,
+		range: [0, 1]
+	},
+	randomSwayRate: {
+		value: 0.4,
 		range: [0, 1]
 	},
 	randomOffset: {

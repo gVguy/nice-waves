@@ -1,7 +1,11 @@
-import { createApp } from 'vue';
-import App from './serve.vue';
+import { createApp } from 'vue'
+import App from './serve.vue'
+import Tooltip from './tooltip.js'
 
-const app = createApp(App);
-app.mount('#app');
+const app = createApp(App)
 
-document.title = 'js-svg-waves';
+app.directive('tooltip', Tooltip)
+
+app.mount('#app')
+
+document.title = 'js-svg-waves'
