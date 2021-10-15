@@ -97,7 +97,7 @@ waves.prototype = {
 		// run the animation
 		this.play()
 
-		this.mounted = true
+		this.mounted = svg
 
 		return this
 	},
@@ -119,8 +119,12 @@ waves.prototype = {
 		// if already stopped do nothing
 		if (!this.animation.isPlaying) return this
 
+		// stop flow animationframe loop
 		window.cancelAnimationFrame(this.animation.request)
 		this.animation.isPlaying = false
+
+		// pause sway animation
+		this.waves.forEach(wave => wave.svgEl.pauseAnimations())
 
 		return this
 	},

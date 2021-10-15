@@ -39,16 +39,16 @@
 				<button class="control-btn" @click="playStopHandler">
 					{{ playStopText }}
 				</button>
-				<button class="control-btn" @click="showOpts = true">
+				<button class="control-btn" @click="showOptsHandler">
 					Show opts
 				</button>
 			</div>
 		</div>
 	</div>
 	<div class="waves" ref="wavesContainer"></div>
-	<div v-show="showOpts" class="popup-opts" @click="showOpts = false">
-		<div class="code" @click.stop>
-			<pre>{{ JSON.stringify(opts, null, 1) }}</pre>
+	<div v-show="showOpts" class="popup-opts" @pointerdown="showOptsHandler">
+		<div class="code" @pointerdown.stop>
+			<pre><code class="lang-js">{{ optsString }}</code></pre>
 		</div>
 	</div>
 </template>
@@ -58,6 +58,10 @@ import waves from '@/main'
 import ColorInput from 'vue-color-input'
 import { random } from '@/utility'
 import defaultOpts from '@/default-opts'
+
+// hightlight for opts popup
+import Prism from 'prismjs'
+Prism.manual = true
 
 export default {
 	name: 'ServeDev',
@@ -69,7 +73,7 @@ export default {
 					isPlaying: null
 				}
 			},
-			fills: {},
+			fills: [],
 			showOpts: false,
 			wavesOpts: {}
 		}
@@ -87,6 +91,15 @@ export default {
 				])
 			)
 			return Object.fromEntries(opts)
+		},
+		optsString() {
+			const opts = JSON.stringify(this.opts, null, 2).replace(
+				/"(\S*)":/gm,
+				'$1:'
+			)
+			return `const opts = ${opts}
+
+waves(opts).mount('#waves')${this.waves.animation.isPlaying ? '' : '.stop()'}`
 		}
 	},
 	methods: {
@@ -118,6 +131,10 @@ export default {
 		removeFill(i) {
 			this.fills.splice(i, 1)
 			this.mountWaves()
+		},
+		showOptsHandler() {
+			this.showOpts = !this.showOpts
+			Prism.highlightAll()
 		}
 	},
 	created() {
