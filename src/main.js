@@ -22,7 +22,6 @@ function waves(opts = {}) {
 
 	// make some props somewhat logarithmic
 	this.randomFlowRate *= 1 / defaultOpts.flowRate.range[1]
-	this.randomSwayRate *= 1 / defaultOpts.swayRate.range[1]
 
 	// curviness should be half its value
 	this.curviness *= 0.5
@@ -50,7 +49,7 @@ function waves(opts = {}) {
 		// add randomness to properties of individual waves
 		// based on properties' default ranges and passed (or default) randomness coefficients
 		// and add them to props object
-		Array('complexity', 'flowRate', 'swayRate').forEach(prop => {
+		Array('complexity', 'flowRate').forEach(prop => {
 			props[prop] =
 				this[prop] > 0
 					? addRandomnessWithRange(

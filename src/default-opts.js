@@ -30,10 +30,6 @@ export default {
 		value: 0,
 		range: [0, 1]
 	},
-	randomSwayRate: {
-		value: 0.4,
-		range: [0, 1]
-	},
 	randomComplexity: {
 		value: 0,
 		range: [0, 1]
