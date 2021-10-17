@@ -140,7 +140,7 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 			const wasPlaying = this.waves.mounted
 				? this.waves.animation.isPlaying
 				: true
-			this.waves = waves(this.opts).mount().stop()
+			this.waves = waves(this.opts).mount()
 			if (!wasPlaying && !forcePlay) this.waves.stop()
 		},
 		playStopHandler() {
@@ -174,7 +174,7 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 			flowRate: 0.6,
 			swayRate: 0.6,
 			wavelength: 14,
-			randomHeight: 0.05,
+			randomHeight: 0.4,
 			swayVelocity: 0.42
 		}
 		this.wavesOpts = JSON.parse(JSON.stringify(defaultOpts))
@@ -331,5 +331,8 @@ h1 {
 	background: rgba(1, 1, 1, 0.5);
 	color: #fbfbfb;
 	font-family: 'Montserrat', sans-serif;
+	transition: opacity 0.3s;
+	padding: 10px;
+	border-radius: 3px;
 }
 </style>
