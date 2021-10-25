@@ -56,6 +56,7 @@
 								:name="prop"
 								@change="parameterChangeHandler"
 							/>
+							<p>{{ wavesOpts[prop].value }}</p>
 						</div>
 						<div v-else><!-- placeholder --></div>
 					</div>
@@ -69,7 +70,7 @@
 					</button>
 					<button
 						class="control-btn"
-						@click="mountWaves"
+						@click="() => mountWaves()"
 						v-tooltip="'Generate new instance with same options'"
 					>
 						Re-mount

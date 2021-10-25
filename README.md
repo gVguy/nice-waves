@@ -1,6 +1,170 @@
 # nice-waves
 
-Vanilla JS library that generates beautiful animated waves
+Generate beautiful animated waves
+
+<p align="center">&#127754;&nbsp;&nbsp;<b><a href="#">Live demo</a></b>&nbsp;&nbsp;&#127754;</p>
+<p align="center"><a href="#">Codepen</a></p>
+
+## What it does
+
+nice-waves is a Vanilla JS library that makes creating waves a breeze
+
+-  generates an svg with seamlessly looping wave paths based on passed options
+-  animates flow with javascript
+-  animates sway with svg's `<animate>` element
+-  provides a `stop()` / `play()` interface (with possibility to disable animation entierly)
+-  allows randomization of most parameters, for unique waves on each render
+
+## Installation
+
+### npm
+
+```shell
+npm i nice-waves
+```
+
+```javascript
+import waves from 'nice-waves'
+```
+
+### CDN
+
+```xml
+<script src="https://unpkg.com/nice-waves@latest"></script>
+```
+
+## Usage
+
+```javascript
+waves().mount()
+```
+
+## Options
+
+You can customize waves by passing options like this:
+
+```javascript
+waves({
+	fills: ['rgba(73, 153, 147, 0.82)', 'rgba(57, 54, 109, 0.5)'],
+	flowRate: 2,
+	swayRate: 0.9,
+	wavelength: 10,
+	offset: 0.12
+	// etc
+})
+```
+
+> For visual demonstration of what each option does, check out [live demo](#)
+
+### fills
+
+Quantity and color of waves
+
+If you want multiple waves of the same color, provide the same color multiple times
+
+`Array`
+
+Default value:
+
+<!-- prettier-ignore -->
+```javascript
+[ 'rgba(0, 0, 0, 0.65)',
+  'rgba(0, 0, 0, 0.6)',
+  'rgba(0, 0, 0, 0.5)' ]
+```
+
+### flowRate
+
+Speed of X-axis motion
+
+`Float`, `0` - `5`
+
+Default value: `0.6`
+
+### randomFlowRate
+
+How much individual wave's `flowRate` is randomized
+
+`Float`, `0` - `1`
+
+Default value: `0`
+
+### swayRate
+
+Speed of X-axis motion
+
+`Float`, `0` - `1`
+
+Default value: `0.6`
+
+### swayVelocity
+
+How far from initial shape the wave is allowed to sway
+
+`Float`, `0` - `1`
+
+Default value: `0.5`
+
+### randomSwayRate
+
+Coefficient of how much individual wave's `swayRate` is randomized
+
+`Float`, `0` - `1`
+
+Default value: `0.4`
+
+### wavelength
+
+Length of one loop
+
+`Float`, `1` - `20`
+
+Default value: `14`
+
+### complexity
+
+How many wave periods there are in one loop
+
+`Float`, `1` - `10`
+
+Default value: `6`
+
+> The more complex the wave is, the more oportunity for randomization
+> For the same shape on every loop, set complexity to `1`
+
+### randomHeight
+
+How far from 100% amplitude each crest is allowed to go
+
+`Float`, `0` - `1`
+
+Default value: `0.4`
+
+## curviness
+
+Fine-tune the wave curve
+
+`Float`, `0` - `1`
+
+Default value: `0.8`
+
+## offset
+
+Offset each wave relative to previous one on the X-axis
+
+`Float`, `0` - `1`
+
+Default value: `0`
+
+> 0 = all waves' crests are syncronous, 1 = even spread
+
+## randomOffset
+
+How much individual wave's `offset` is randomized
+
+`Float`, `0` - `1`
+
+Default value: `0`
 
 ## License
 
