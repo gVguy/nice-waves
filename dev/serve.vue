@@ -282,6 +282,9 @@ h1 {
 	.setup-content {
 		position: relative;
 		z-index: 2;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 }
 .setup-grid {
@@ -289,7 +292,7 @@ h1 {
 	grid-template-rows: auto;
 }
 .setup-block {
-	margin-bottom: 20px;
+	margin: 20px;
 	p {
 		margin: 0;
 	}
