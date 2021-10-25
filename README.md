@@ -86,7 +86,7 @@ Waves will play by default after mount
 
 ```javascript
 if (myCoolWaves && !myCoolWaves.animation.isPlaying) {
-	myCoolWaves.play()
+  myCoolWaves.play()
 }
 ```
 
@@ -96,12 +96,12 @@ You can customize waves by passing options like this:
 
 ```javascript
 waves({
-	fills: ['rgba(73, 153, 147, 0.82)', 'rgba(57, 54, 109, 0.5)'],
-	flowRate: 2,
-	swayRate: 0.9,
-	wavelength: 10,
-	offset: 0.12
-	// etc
+  fills: ['rgba(73, 153, 147, 0.82)', 'rgba(57, 54, 109, 0.5)'],
+  flowRate: 2,
+  swayRate: 0.9,
+  wavelength: 10,
+  offset: 0.12
+  // etc
 })
 ```
 
