@@ -1,24 +1,7 @@
-# js-svg-waves
+# svg-waves
 
-## Project setup
-```
-npm install
-```
+Generate beautiful animated waves with ease
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+## License
 
-### Compiles and minifies for production
-```
-npm run build
-```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+MIT

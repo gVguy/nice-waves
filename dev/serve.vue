@@ -4,63 +4,90 @@
 		<h3>
 			<a class="docsLink" href="#">Docs</a>
 		</h3>
+		<div id="waves"></div>
 		<div class="setup">
-			<div class="setup-block main">
-				<h3>fills</h3>
-				<div
-					v-for="(fill, i) in fills"
-					class="color-input-wrapper"
-					:key="'fill_' + fill.id"
-				>
-					<color-input v-model="fill.color" @change="mountWaves" />
-					<button
-						v-if="fills.length != 1"
-						class="remove-fill"
-						@click="removeFill(i)"
+			<div
+				class="fill-blender"
+				v-for="(fill, i) in opts.fills"
+				:style="{ background: fill }"
+				:key="'fill_blender_' + i"
+			></div>
+			<div class="setup-content">
+				<div class="setup-block main">
+					<h3>fills</h3>
+					<div
+						v-for="(fill, i) in fills"
+						class="color-input-wrapper"
+						:key="'fill_' + fill.id"
 					>
-						&#x2715;
+						<color-input
+							v-model="fill.color"
+							@change="fillChangeHandler"
+						/>
+						<button
+							v-if="fills.length != 1"
+							class="remove-fill"
+							@click="removeFill(i)"
+						>
+							&#x2715;
+						</button>
+					</div>
+					<button class="add-fill" @click="addFill">&#x2295;</button>
+				</div>
+				<div
+					class="setup-grid"
+					:style="{
+						gridTemplateColumns: '1fr '.repeat(propsLayout.cols)
+					}"
+				>
+					<div
+						v-for="prop in propsLayout.items"
+						class="setup-block"
+						:key="'setup_' + prop"
+					>
+						<div v-if="prop">
+							<h3>{{ prop }}</h3>
+							<input
+								type="range"
+								:min="wavesOpts[prop].range[0]"
+								:max="wavesOpts[prop].range[1]"
+								:step="wavesOpts[prop].range[1] > 5 ? 1 : 0.01"
+								v-model.number="wavesOpts[prop]['value']"
+								:name="prop"
+								@change="parameterChangeHandler"
+							/>
+						</div>
+						<div v-else><!-- placeholder --></div>
+					</div>
+				</div>
+				<div class="setup-block main">
+					<button class="control-btn" @click="playStopHandler">
+						{{ playStopText }}
+					</button>
+					<button class="control-btn" @click="showOptsHandler">
+						Show opts
+					</button>
+					<button
+						class="control-btn"
+						@click="mountWaves"
+						v-tooltip="'Generate new instance with same options'"
+					>
+						Re-mount
+					</button>
+					<button
+						class="control-btn"
+						@click="resetOpts"
+						v-tooltip="'Reset all opts to default settings'"
+					>
+						Reset
 					</button>
 				</div>
-				<button class="add-fill" @click="addFill">&#x2295;</button>
-			</div>
-			<div
-				class="setup-block"
-				v-for="opt in Object.keys(wavesOpts)"
-				:key="'setup_' + opt"
-			>
-				<h3>{{ opt }}</h3>
-				<input
-					type="range"
-					:min="wavesOpts[opt].range[0]"
-					:max="wavesOpts[opt].range[1]"
-					:step="wavesOpts[opt].range[1] > 5 ? 1 : 0.01"
-					v-model.number="wavesOpts[opt]['value']"
-					:name="opt"
-					@change="parameterChangeHandler"
-				/>
-				<p>{{ wavesOpts[opt].value }}</p>
-			</div>
-			<div class="setup-block main">
-				<button class="control-btn" @click="playStopHandler">
-					{{ playStopText }}
-				</button>
-				<button class="control-btn" @click="showOptsHandler">
-					Show opts
-				</button>
-				<button
-					class="control-btn"
-					@click="mountWaves"
-					v-tooltip="'Generate new instance with same options'"
-				>
-					Re-mount
-				</button>
 			</div>
 		</div>
-	</div>
-	<div id="waves"></div>
-	<div v-show="showOpts" class="popup-opts" @pointerdown="showOptsHandler">
-		<div class="code" @pointerdown.stop>
-			<pre><code class="lang-js">{{ optsString }}</code></pre>
+		<div v-show="showOpts" class="popup-opts" @pointerdown="showOptsHandler">
+			<div class="code" @pointerdown.stop>
+				<pre><code class="lang-js">{{ optsString }}</code></pre>
+			</div>
 		</div>
 	</div>
 </template>
@@ -88,6 +115,7 @@ export default {
 			fills: [],
 			showOpts: false,
 			wavesOpts: {
+				fills: [],
 				flowRate: 0,
 				swayRate: 0,
 				swayVelocity: 0
@@ -99,17 +127,16 @@ export default {
 			return this.waves.animation.isPlaying ? 'Stop' : 'Play'
 		},
 		opts() {
-			const fills = this.fills.map(f => f.color)
-			const opts = [['fills', fills]].concat(
+			const opts = Object.fromEntries(
 				Object.keys(this.wavesOpts).map(key => [
 					key,
 					this.wavesOpts[key].value
 				])
 			)
-			return Object.fromEntries(opts)
+			return opts
 		},
 		optsString() {
-			let opts = this.opts
+			let opts = JSON.parse(JSON.stringify(this.opts))
 
 			Object.keys(opts).forEach(key => {
 				if (
@@ -127,6 +154,10 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 		}
 	},
 	methods: {
+		fillChangeHandler() {
+			this.wavesOpts.fills = { value: this.fills.map(f => f.color) }
+			this.mountWaves()
+		},
 		parameterChangeHandler(e) {
 			let forcePlay = false
 			if (
@@ -158,43 +189,40 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 				id: this.fills.length + 1,
 				color: 'rgba(' + r + ', ' + g + ', ' + b + ', 0.5)'
 			})
-			this.mountWaves()
+			this.fillChangeHandler()
 		},
 		removeFill(i) {
 			this.fills.splice(i, 1)
-			this.mountWaves()
+			this.fillChangeHandler()
 		},
 		showOptsHandler() {
 			this.showOpts = !this.showOpts
 			Prism.highlightAll()
+		},
+		resetOpts(mount = true) {
+			this.wavesOpts = JSON.parse(JSON.stringify(defaultOpts))
+
+			this.fills = this.wavesOpts.fills.value.map((f, i) => ({
+				id: i + 1,
+				color: f
+			}))
+
+			if (mount) this.mountWaves()
 		}
 	},
 	created() {
-		const custom = {
-			flowRate: 0.6,
-			swayRate: 0.6,
-			wavelength: 14,
-			randomHeight: 0.4,
-			swayVelocity: 0.42
-		}
-		this.wavesOpts = JSON.parse(JSON.stringify(defaultOpts))
-		Object.keys(custom).forEach(k => (this.wavesOpts[k].value = custom[k]))
-		delete this.wavesOpts.fills
-
-		const fills = custom.fills ? custom.fills : defaultOpts.fills.value
-
-		this.fills = fills.map((f, i) => ({
-			id: i + 1,
-			color: f
-		}))
+		this.resetOpts(false)
 
 		// props template positions matrix
 		// prettier-ignore
-		// const propsLayout = [
-		// 	[ 'flowRate',       'velocity',     'wavelength', 'offset',       'curviness'],
-		// 	[ 'randomFlowRate', 'swayVelocity', 'complexity', 'randomOffset', ''],
-		// 	[]
-		// ]
+		const layout = [
+			[ 'flowRate',       'swayRate',       'wavelength', 'randomHeight', 'offset' ],
+			[ 'randomFlowRate', 'swayVelocity',   'complexity',  'curviness',   'randomOffset' ],
+			[ '',               'randomSwayRate', ]
+		]
+		const cols = layout.reduce((p, c) => (c.length > p ? c.length : p), 0)
+		const items = layout.flat()
+		this.propsLayout = { cols, items }
 	},
 	mounted() {
 		this.mountWaves()
@@ -205,8 +233,10 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 <style lang="scss">
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@200&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300&display=swap');
-body {
+:root {
 	background: #fbfbfb;
+}
+body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Montserrat', sans-serif;
@@ -222,8 +252,6 @@ body {
 }
 
 #waves {
-	position: absolute;
-	bottom: 0;
 	width: 100%;
 	height: 200px;
 }
@@ -234,21 +262,33 @@ h1 {
 .docsLink {
 	margin-bottom: 20px;
 	text-decoration: underline;
+	color: #0f0f0f;
 }
 .setup {
-	display: flex;
-	justify-content: center;
-	align-items: top;
-	flex-wrap: wrap;
-	margin-bottom: 20px;
+	color: #fbfbfb;
+	text-align: center;
+	flex-grow: 1;
+	width: 100%;
+	position: relative;
+	.fill-blender {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		z-index: 1;
+	}
+	.setup-content {
+		position: relative;
+		z-index: 2;
+	}
+}
+.setup-grid {
+	display: grid;
+	grid-template-rows: auto;
 }
 .setup-block {
-	flex: 0 1;
-	margin: 10px;
-	text-align: center;
-	&.main {
-		flex-basis: 100%;
-	}
+	margin-bottom: 20px;
 	p {
 		margin: 0;
 	}
@@ -266,9 +306,6 @@ h1 {
 	vertical-align: middle;
 	.box {
 		border-radius: 10px;
-	}
-	.box.active {
-		background: #0f0f0f;
 	}
 }
 .color-input-wrapper {
@@ -306,13 +343,14 @@ h1 {
 	cursor: pointer;
 	transition: color 0.3s;
 	&:hover {
-		color: #0f0f0f;
+		color: #fbfbfb;
 	}
 }
 .popup-opts {
 	width: 100%;
 	height: 100%;
 	position: fixed;
+	z-index: 10;
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -334,5 +372,6 @@ h1 {
 	transition: opacity 0.3s;
 	padding: 10px;
 	border-radius: 3px;
+	z-index: 9999;
 }
 </style>

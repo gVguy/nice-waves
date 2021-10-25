@@ -1,17 +1,17 @@
 export default {
 	fills: {
-		value: ['rgba(1, 1, 1, 0.5)', 'rgba(1, 1, 1, 0.4)', 'rgba(1, 1, 1, 0.2)']
+		value: ['rgba(0, 0, 0, 0.65)', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.5)']
 	},
 	flowRate: {
 		value: 0.6,
 		range: [0, 5]
 	},
 	swayRate: {
-		value: 0.5,
+		value: 0.6,
 		range: [0, 1]
 	},
 	wavelength: {
-		value: 9,
+		value: 14,
 		range: [1, 20]
 	},
 	complexity: {
@@ -35,11 +35,11 @@ export default {
 		range: [0, 1]
 	},
 	randomHeight: {
-		value: 0.7,
+		value: 0.4,
 		range: [0, 1]
 	},
 	swayVelocity: {
-		value: 1,
+		value: 0.5,
 		range: [0, 1]
 	},
 	randomSwayRate: {
