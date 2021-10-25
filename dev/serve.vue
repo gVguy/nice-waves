@@ -241,6 +241,7 @@ body {
 	margin: 0;
 	padding: 0;
 	font-family: 'Montserrat', sans-serif;
+	font-weight: 200;
 }
 #app {
 	font-size: 16px;

@@ -38,7 +38,8 @@ export default class Wave {
 		})
 		this.pathEl = createElNS('path', {
 			d: this.pathDoubleString,
-			fill: this.fill
+			fill: this.fill,
+			'shape-rendering': 'geometricPrecision'
 		})
 
 		// nest the svg elements
