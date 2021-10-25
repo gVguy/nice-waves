@@ -2,7 +2,7 @@
 
 Generate beautiful animated waves
 
-<p align="center">&#127754;&nbsp;&nbsp;<b><a href="#">Live demo</a></b>&nbsp;&nbsp;&#127754;</p>
+<p align="center">&#127754;&nbsp;&nbsp;<b><a href="https://gvguy.github.io/nice-waves/">Live demo</a></b>&nbsp;&nbsp;&#127754;</p>
 <p align="center"><a href="#">Codepen</a></p>
 
 ## What it does
@@ -105,7 +105,7 @@ waves({
 })
 ```
 
-> For visual demonstration of what each option does, check out [live demo](#)
+> For visual demonstration of what each option does, check out [live demo](https://gvguy.github.io/nice-waves/)
 
 ### fills
 
