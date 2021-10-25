@@ -207,7 +207,7 @@ Offset each wave relative to previous one on the X-axis
 
 Default value: `0`
 
-> 0 = all waves' crests are syncronous, 1 = even spread
+> 0 = all waves' crests are in sync, 1 = even spread
 
 ### randomOffset
 
