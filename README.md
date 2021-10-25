@@ -1,6 +1,6 @@
-# svg-waves
+# nice-waves
 
-Generate beautiful animated waves with ease
+Vanilla JS library that generates beautiful animated waves
 
 ## License
 

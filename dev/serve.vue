@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<h1>svg-waves</h1>
+		<h1>nice-waves</h1>
 		<h3>
 			<a class="docsLink" href="#">Docs</a>
 		</h3>

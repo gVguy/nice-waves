@@ -8,4 +8,4 @@ app.use(Tooltip)
 
 app.mount('#app')
 
-document.title = 'svg-waves'
+document.title = 'nice-waves'
