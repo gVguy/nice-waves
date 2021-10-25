@@ -39,6 +39,57 @@ import waves from 'nice-waves'
 waves().mount()
 ```
 
+## Methods
+
+### `mount(el = '#waves')`
+
+Mounts waves at the specified mount point or (if none provided) first element element with `#waves`
+
+Expects `el` to be a query selector string or node element
+
+Returns instance for chaining or `false` if couldn't mount
+
+```javascript
+const mountPoint = document.getElementById('waves')
+waves().mount(mountPoint)
+
+// Equivalent to
+
+waves().mount('#waves')
+
+// Also equivalent to
+
+waves().mount()
+```
+
+### `stop()`
+
+Stops all animation if not already stopped
+
+Returns instance
+
+Waves will play by default after mount, so if you want them static, you can do this:
+
+```javascript
+const myCoolWaves = waves().mount('#mountpoint').stop()
+```
+
+### `play()`
+
+Runs the animation if it's not yet running
+
+If `flowRate` and `swayRate` are both set to `0`, this will do nothing
+
+Returns instance
+
+Waves will play by default after mount
+
+```javascript
+if (myCoolWaves && !myCoolWaves.animation.isPlaying) {
+	myCoolWaves.play()
+}
+```
+
 ## Options
 
 You can customize waves by passing options like this:
