@@ -2,7 +2,11 @@
 	<div id="app">
 		<h1>nice-waves</h1>
 		<h3>
-			<a class="docsLink" href="#">Docs</a>
+			<a
+				class="docsLink"
+				href="https://github.com/gVguy/nice-waves#nice-waves"
+				>Docs</a
+			>
 		</h3>
 		<div id="waves"></div>
 		<div class="setup">
