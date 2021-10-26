@@ -7,8 +7,8 @@ export default {
 		range: [0, 5]
 	},
 	swayRate: {
-		value: 2,
-		range: [0.01, 5]
+		value: 2.8,
+		range: [0, 5]
 	},
 	wavelength: {
 		value: 14,
@@ -43,7 +43,7 @@ export default {
 		range: [0, 1]
 	},
 	randomSwayRate: {
-		value: 0.4,
+		value: 0.2,
 		range: [0, 1]
 	},
 	randomOffset: {

@@ -144,9 +144,9 @@ Default value: `0`
 
 Speed of X-axis motion
 
-`Float`, `0` - `1`
+`Float`, `0` - `5`
 
-Default value: `0.6`
+Default value: `2.8`
 
 ### swayVelocity
 

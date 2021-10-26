@@ -20,9 +20,6 @@ function waves(opts = {}) {
 		else this[k] = passedVal
 	}
 
-	// sway rate should be inverse
-	this.swayRate = defaultOpts.swayRate.range[1] - this.swayRate
-
 	// some props should be half its value
 	this.curviness *= 0.5
 	this.randomSwayRate *= 0.5

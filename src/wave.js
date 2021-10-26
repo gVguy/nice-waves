@@ -11,8 +11,9 @@ export default class Wave {
 		// complexity should be a round int
 		this.complexity = Math.round(props.complexity)
 
-		// sway rate should be times 100
-		this.swayRate *= 100
+		// sway rate should be inverse and times 100
+		this.swayRate = this.swayRate ? 501 - this.swayRate * 100 : 0
+		console.log(this.swayRate)
 
 		// actual path length (root svg viewbox width is 100)
 		this.period = this.wavelength * 100
