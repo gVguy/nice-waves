@@ -20,9 +20,8 @@ function waves(opts = {}) {
 		else this[k] = passedVal
 	}
 
-	// make some props somewhat logarithmic
-	this.randomFlowRate *= 1 / defaultOpts.flowRate.range[1]
-	this.randomSwayRate *= 1 / defaultOpts.swayRate.range[1]
+	// sway rate should be inverse
+	this.swayRate = defaultOpts.swayRate.range[1] - this.swayRate
 
 	// some props should be half its value
 	this.curviness *= 0.5
@@ -44,14 +43,14 @@ function waves(opts = {}) {
 			wavelength: this.wavelength,
 			fill: this.fills[i],
 			randomOffset: this.randomOffset,
-			swayRate: this.swayRate,
-			swayVelocity: this.swayVelocity
+			swayVelocity: this.swayVelocity,
+			complexity: this.complexity
 		}
 
 		// add randomness to properties of individual waves
 		// based on properties' default ranges and passed (or default) randomness coefficients
 		// and add them to props object
-		Array('complexity', 'flowRate', 'swayRate').forEach(prop => {
+		Array('flowRate', 'swayRate').forEach(prop => {
 			props[prop] =
 				this[prop] > 0
 					? addRandomnessWithRange(
@@ -125,16 +124,9 @@ waves.prototype = {
 			return this
 
 		// start flow animation
-		if (this.flowRate) {
-			this.animation.request = window.requestAnimationFrame(
-				this.animationStep.bind(this)
-			)
-		}
-
-		// start sway animation
-		if (this.swayRate) {
-			this.waves.forEach(wave => wave.svgEl.unpauseAnimations())
-		}
+		this.animation.request = window.requestAnimationFrame(() =>
+			this.animationStep()
+		)
 
 		this.animation.isPlaying = true
 

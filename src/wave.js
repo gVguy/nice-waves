@@ -11,6 +11,9 @@ export default class Wave {
 		// complexity should be a round int
 		this.complexity = Math.round(props.complexity)
 
+		// sway rate should be times 100
+		this.swayRate *= 100
+
 		// actual path length (root svg viewbox width is 100)
 		this.period = this.wavelength * 100
 
@@ -45,27 +48,26 @@ export default class Wave {
 		// nest the svg elements
 		this.svgEl.append(this.pathEl)
 
-		// if wave morphing is enabled
-		// create a morph TO path
-		// and add animate node to svg
-		const swayDuration = 20.3 - 20 * this.swayRate
+		// if sway is enabled
+		// create a morphed path and an array of morph steps
+		// to be referenced in animation loop
 		if (this.swayRate) {
-			this.animateEl = createElNS('animate', {
-				attributeName: 'd',
-				values:
-					this.pathDoubleString +
-					';' +
-					this.path.clone().morph(this.swayVelocity).double().string +
-					';' +
-					this.pathDoubleString,
-				dur: swayDuration + 's',
-				repeatCount: 'indefinite',
-				calcMode: 'spline',
-				keyTimes: '0; 0.5; 1',
-				keySplines: '0.4 0 0.6 1;'.repeat(2)
+			const from = this.path.curve
+			const to = this.path.clone().morph().curve
+			this.swaySteps = from.map((fromCmd, i) => {
+				return fromCmd.points.map((point, j) => {
+					const fromY = point.y
+					const toY = to[i].points[j].y
+					const direction = fromY < toY ? 1 : -1
+					return (
+						((Math.max(fromY, toY) - Math.min(fromY, toY)) /
+							this.swayRate) *
+						direction
+					)
+				})
 			})
-
-			this.pathEl.append(this.animateEl)
+			this.swayDirection = 1
+			this.swayIndex = 0
 		}
 	}
 
@@ -81,6 +83,14 @@ export default class Wave {
 
 	// called from the root animation loop
 	animationStep() {
+		this.flowStep()
+		this.swayStep()
+	}
+
+	// move whole wave on the x-axis
+	flowStep() {
+		if (!this.flowRate) return
+
 		// calculate new x value
 		let x = this.x - this.flowRate
 
@@ -89,6 +99,24 @@ export default class Wave {
 		if (x < -this.period) x += this.period
 
 		this.x = x
+	}
+
+	// move each path Y point up or down a pre-calculated distance
+	swayStep() {
+		if (!this.swayRate) return
+
+		if (this.swayIndex >= this.swayRate) {
+			// reached the end of animation, turn back
+			this.swayDirection = 0 - this.swayDirection
+			this.swayIndex = 0
+		}
+		this.path.curve.forEach((cmd, i) => {
+			cmd.points.forEach((point, j) => {
+				point.y += this.swaySteps[i][j] * this.swayDirection
+			})
+		})
+		this.swayIndex++
+		this.pathEl.setAttribute('d', this.path.string)
 	}
 }
 

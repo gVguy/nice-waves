@@ -7,8 +7,8 @@ export default {
 		range: [0, 5]
 	},
 	swayRate: {
-		value: 0.6,
-		range: [0, 1]
+		value: 2,
+		range: [0.01, 5]
 	},
 	wavelength: {
 		value: 14,
