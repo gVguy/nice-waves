@@ -23,8 +23,8 @@ export default class Wave {
 		this.period = addRandomnessWithRange(
 			this.wavelength * 100,
 			this.randomWavelength,
-			100, // wavelength lower range boundary * 100
-			2000 // wavelength upper range boundary * 100
+			this.wavelength * 50,
+			this.wavelength * 150
 		)
 
 		console.log(this.period)

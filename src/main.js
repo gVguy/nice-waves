@@ -23,7 +23,6 @@ function waves(opts = {}) {
 	// some props should be half its value
 	this.curviness *= 0.5
 	this.randomSwayRate *= 0.5
-	this.randomWavelength *= 0.5
 
 	// offset should depend on waves count
 	this.offset /= this.fills.length

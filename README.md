@@ -148,14 +148,6 @@ Speed of X-axis motion
 
 Default value: `2.8`
 
-### swayVelocity
-
-How far from initial shape the wave is allowed to sway
-
-`Float`, `0` - `1`
-
-Default value: `0.5`
-
 ### randomSwayRate
 
 Coefficient of how much individual wave's `swayRate` is randomized
@@ -164,6 +156,14 @@ Coefficient of how much individual wave's `swayRate` is randomized
 
 Default value: `0.4`
 
+### swayVelocity
+
+How far from initial shape the wave is allowed to sway
+
+`Float`, `0` - `1`
+
+Default value: `0.5`
+
 ### wavelength
 
 Length of one loop
@@ -171,6 +171,14 @@ Length of one loop
 `Float`, `1` - `20`
 
 Default value: `14`
+
+### randomWavelength
+
+Coefficient of how much individual wave's `wavelength` is randomized
+
+`Float`, `0` - `1`
+
+Default value: `0`
 
 ### complexity
 
