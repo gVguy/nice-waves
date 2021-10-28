@@ -1,4 +1,9 @@
-import { createElNS, random, addRandomnessWithRange } from '@/utility'
+import {
+	createElNS,
+	random,
+	addRandomnessWithRange,
+	easeInOutCubic
+} from '@/utility'
 import { stringifyPath, translatePath, morphPathVelocity } from '@/path'
 
 export default class Wave {
@@ -52,24 +57,19 @@ export default class Wave {
 		// create a morphed path
 		// and an array of path states for each animation step
 		if (this.swayRate) {
-			// create an array of step distances (linear)
+			// create an array of from-to differences
 			// for every point of every command
-			// [[0.001, 0.002, 0.0001], [0, -0.0001, -0.0004] ... ]
-			// each value is how much the point should move with every interpolation step
+			// [[10.5, 6.667, 1.50], [0, -20.564, -10.3] ... ]
 
 			const from = this.path
-			const to = this.path.clone().morph()
+			const to = this.path.clone().morph(this.swayVelocity)
 
-			const swaySteps = from.curve.map((fromCmd, i) => {
+			const swayDiff = from.curve.map((fromCmd, i) => {
 				return fromCmd.points.map((point, j) => {
 					const fromY = point.y
 					const toY = to.curve[i].points[j].y
 					const direction = fromY < toY ? 1 : -1
-					return (
-						((Math.max(fromY, toY) - Math.min(fromY, toY)) /
-							this.swayRate) *
-						direction
-					)
+					return (Math.max(fromY, toY) - Math.min(fromY, toY)) * direction
 				})
 			})
 
@@ -84,10 +84,11 @@ export default class Wave {
 
 			// all other steps are interpolation between first and last
 			for (let i = 1; i < this.swayRate; i++) {
+				const swayInvK = (1 / this.swayRate) * i
 				const path = this.path.clone()
 				path.curve.forEach((cmd, k) => {
 					cmd.points.forEach((point, j) => {
-						point.y += swaySteps[k][j] * i
+						point.y += swayDiff[k][j] * easeInOutCubic(swayInvK)
 					})
 				})
 				this.swayPathStates.push({ path, string: path.double().string })
