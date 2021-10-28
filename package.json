@@ -1,14 +1,44 @@
 {
    "name": "nice-waves",
    "version": "0.1.0",
+   "description": "Beautiful animated waves",
+   "author": "Ivan Che",
+   "bugs": {
+      "url": "https://github.com/gVguy/nice-waves/issues"
+   },
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/gVguy/nice-waves.git"
+   },
+   "homepage": "https://github.com/gVguy/nice-waves",
+   "keywords": [
+      "nice",
+      "waves",
+      "javascript",
+      "svg"
+   ],
+   "license": "ISC",
+   "main": "dist/nice-waves.ssr.js",
+   "browser": "dist/nice-waves.esm.js",
+   "module": "dist/nice-waves.esm.js",
+   "unpkg": "dist/nice-waves.min.js",
+   "files": [
+      "dist/*.js",
+      "src/*.js"
+   ],
    "scripts": {
-      "serve": "vue-cli-service serve dev/serve.js",
-      "build:demo": "vue-cli-service build dev/serve.js --dest demo",
-      "lint": "vue-cli-service lint",
+      "serve": "TARGET=demo vue-cli-service serve dev/serve.js",
+      "build:demo": "TARGET=demo vue-cli-service build dev/serve.js --dest demo",
       "publish:demo": "gh-pages -d demo",
-      "prepublish:demo": "npm run build:demo"
+      "prepublish:demo": "npm run build:demo",
+      "build": "TARGET=main rollup -c",
+      "prepublishOnly": "npm run build"
    },
    "devDependencies": {
+      "@rollup/plugin-alias": "^3.1.8",
+      "@rollup/plugin-babel": "^5.3.0",
+      "@rollup/plugin-commonjs": "^21.0.1",
+      "@rollup/plugin-node-resolve": "^13.0.6",
       "@vue/cli-plugin-babel": "~4.5.13",
       "@vue/cli-plugin-eslint": "~4.5.13",
       "@vue/cli-service": "~4.5.13",
@@ -22,6 +52,8 @@
       "gh-pages": "^3.2.3",
       "prettier": "^2.4.1",
       "prismjs": "^1.25.0",
+      "rollup": "^2.58.3",
+      "rollup-plugin-terser": "^7.0.2",
       "sass": "^1.42.1",
       "sass-loader": "^10.2.0",
       "vue": "^3.0.0",
@@ -42,10 +74,5 @@
          "parser": "babel-eslint"
       },
       "rules": {}
-   },
-   "browserslist": [
-      "> 1%",
-      "last 2 versions",
-      "not dead"
-   ]
+   }
 }
