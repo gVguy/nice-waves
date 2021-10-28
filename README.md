@@ -39,11 +39,13 @@ import waves from 'nice-waves'
 waves().mount()
 ```
 
-## Methods
+## Mount
 
-### `mount(el = '#waves')`
+```javascript
+mount(el = '#waves')`
+```
 
-Mounts waves at the specified mount point or (if none provided) first element element with `#waves`
+Mounts waves at the specified mount point or (if none provided) first element element with id `#waves`
 
 Expects `el` to be a query selector string or node element
 
@@ -61,6 +63,20 @@ waves().mount('#waves')
 
 waves().mount()
 ```
+
+## Animation
+
+All animations are done in plain javascript with `reqestAnimationFrame`
+
+There are two animation types: flow and sway
+
+**Flow** is the x-axis scrolling motion
+
+**Sway** is the up-down motion achieved by path morphing (each wave crest moves independently from the others, resulting in a more naturall and particularly _nice_ effect)
+
+Both can be disabled independently from each other by setting a corresponding `rate` to `0`
+
+All animation can be controlled with `play()` and `stop()` methods
 
 ### `stop()`
 
