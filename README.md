@@ -146,7 +146,7 @@ Speed of X-axis motion
 
 `Float`, `0` - `5`
 
-Default value: `2.8`
+Default value: `3.2`
 
 ### randomSwayRate
 

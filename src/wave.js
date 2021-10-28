@@ -27,8 +27,6 @@ export default class Wave {
 			this.wavelength * 150
 		)
 
-		console.log(this.period)
-
 		// generate wave data object
 		this.path = getWave.call(this)
 
