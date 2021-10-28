@@ -3,7 +3,7 @@
 Generate beautiful animated waves
 
 <p align="center">&#127754;&nbsp;&nbsp;<b><a href="https://gvguy.github.io/nice-waves/">Live demo</a></b>&nbsp;&nbsp;&#127754;</p>
-<p align="center"><a href="#">Codepen</a></p>
+<p align="center"><a href="https://codepen.io/vanechka222/pen/KKvqjZg?editors=1010">Codepen</a></p>
 
 ## What it does
 
