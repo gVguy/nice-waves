@@ -19,12 +19,12 @@ export default class Wave {
 		// sway rate should be inverse and times 100
 		this.swayRate = this.swayRate ? 501 - Math.round(this.swayRate * 100) : 0
 
-		// actual path length (root svg viewbox width is 100)
+		// actual path length (root svg viewbox width is 1000)
 		this.period = addRandomnessWithRange(
-			this.wavelength * 100,
+			this.wavelength * 1000,
 			this.randomWavelength,
-			this.wavelength * 50,
-			this.wavelength * 150
+			this.wavelength * 500,
+			this.wavelength * 1500
 		)
 
 		// generate wave data object
@@ -171,17 +171,17 @@ function getWave() {
 
 	// data contains only x coordinates for now
 	// transform it into path data
-	let y = 48
-	let lastY = 48
+	let y = 480
+	let lastY = 480
 	data = data.map(x => {
 		// alternate high and low points
 		// and add randomness to y
 		// unless processing last point, which should remain unrandomized
-		let rand = random(0, 23) * this.randomHeight
+		let rand = random(0, 230) * this.randomHeight
 		if (Math.round(x) != Math.round(this.period)) {
-			y = y < 25 ? 48 - rand : 2 + rand
+			y = y < 250 ? 480 - rand : 2 + rand
 		} else {
-			y = 48
+			y = 480
 		}
 
 		// transform every x coordinate into cubic-bezier command
@@ -205,14 +205,14 @@ function getWave() {
 		open: [
 			{
 				cmd: 'M',
-				points: [{ x: 0, y: 48 }]
+				points: [{ x: 0, y: 480 }]
 			}
 		],
 		curve: data,
 		close: [
 			{
 				cmd: 'V',
-				points: [{ y: 50 }]
+				points: [{ y: 500 }]
 			},
 			{
 				cmd: 'H',

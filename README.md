@@ -128,9 +128,9 @@ Default value:
 
 Speed of X-axis motion
 
-`Float`, `0` - `5`
+`Float`, `0` - `50`
 
-Default value: `0.6`
+Default value: `6`
 
 ### randomFlowRate
 

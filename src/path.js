@@ -18,16 +18,16 @@ export function translatePath(path, coord, offset) {
 // randomizes path velocity within its original velocity range
 export function morphPathVelocity(path, velocity) {
 	const resultPathData = []
-	let lastY = 48
+	let lastY = 480
 	path.forEach((item, i) => {
 		item = JSON.parse(JSON.stringify(item))
 		let y = item.points[item.points.length - 1].y
 		if (i != path.length - 1)
 			y =
-				y < 25
-					? addRandomnessWithRange(y, velocity, 2, 25)
-					: addRandomnessWithRange(y, velocity, 25, 48)
-		else y = 48
+				y < 250
+					? addRandomnessWithRange(y, velocity, 2, 250)
+					: addRandomnessWithRange(y, velocity, 250, 480)
+		else y = 480
 		item.points.forEach((point, j) => (point.y = j == 0 ? lastY : y))
 		lastY = y
 		resultPathData.push(item)

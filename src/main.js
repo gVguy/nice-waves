@@ -89,7 +89,7 @@ waves.prototype = {
 		}
 
 		const svg = createElNS('svg', {
-			viewBox: '0 0 100 50',
+			viewBox: '0 0 1000 500',
 			width: '100%',
 			height: '100%',
 			preserveAspectRatio: 'none'
@@ -121,7 +121,7 @@ waves.prototype = {
 		)
 			return this
 
-		// start flow animation
+		// start animation
 		this.animation.request = window.requestAnimationFrame(() =>
 			this.animationStep()
 		)
