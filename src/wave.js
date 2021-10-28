@@ -20,7 +20,14 @@ export default class Wave {
 		this.swayRate = this.swayRate ? 501 - Math.round(this.swayRate * 100) : 0
 
 		// actual path length (root svg viewbox width is 100)
-		this.period = this.wavelength * 100
+		this.period = addRandomnessWithRange(
+			this.wavelength * 100,
+			this.randomWavelength,
+			100, // wavelength lower range boundary * 100
+			2000 // wavelength upper range boundary * 100
+		)
+
+		console.log(this.period)
 
 		// generate wave data object
 		this.path = getWave.call(this)

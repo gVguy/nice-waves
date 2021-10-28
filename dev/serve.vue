@@ -223,7 +223,7 @@ waves(opts).mount()${this.waves.animation.isPlaying ? '' : '.stop()'}`
 		const layout = [
 			[ 'flowRate',       'swayRate',       'wavelength', 'randomHeight', 'offset' ],
 			[ 'randomFlowRate', 'swayVelocity',   'complexity',  'curviness',   'randomOffset' ],
-			[ '',               'randomSwayRate', ]
+			[ '',               'randomSwayRate', 'randomWavelength' ]
 		]
 		const cols = layout.reduce((p, c) => (c.length > p ? c.length : p), 0)
 		const items = layout.flat()

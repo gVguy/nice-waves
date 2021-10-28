@@ -30,7 +30,7 @@ export default {
 		value: 0,
 		range: [0, 1]
 	},
-	randomComplexity: {
+	randomWavelength: {
 		value: 0,
 		range: [0, 1]
 	},
