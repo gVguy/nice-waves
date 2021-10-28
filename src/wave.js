@@ -12,8 +12,7 @@ export default class Wave {
 		this.complexity = Math.round(props.complexity)
 
 		// sway rate should be inverse and times 100
-		this.swayRate = this.swayRate ? 501 - this.swayRate * 100 : 0
-		console.log(this.swayRate)
+		this.swayRate = this.swayRate ? 501 - Math.round(this.swayRate * 100) : 0
 
 		// actual path length (root svg viewbox width is 100)
 		this.period = this.wavelength * 100
@@ -22,7 +21,7 @@ export default class Wave {
 		this.path = getWave.call(this)
 
 		// and turn it to svg string (double length)
-		this.pathDoubleString = this.path.clone().double().string
+		const pathDoubleString = this.path.clone().double().string
 
 		// calculate wave offset
 		// max offset is the distance between two high points
@@ -41,7 +40,7 @@ export default class Wave {
 			x: -offset
 		})
 		this.pathEl = createElNS('path', {
-			d: this.pathDoubleString,
+			d: pathDoubleString,
 			fill: this.fill,
 			'shape-rendering': 'geometricPrecision'
 		})
@@ -50,15 +49,21 @@ export default class Wave {
 		this.svgEl.append(this.pathEl)
 
 		// if sway is enabled
-		// create a morphed path and an array of morph steps
-		// to be referenced in animation loop
+		// create a morphed path
+		// and an array of path states for each animation step
 		if (this.swayRate) {
-			const from = this.path.curve
-			const to = this.path.clone().morph().curve
-			this.swaySteps = from.map((fromCmd, i) => {
+			// create an array of step distances (linear)
+			// for every point of every command
+			// [[0.001, 0.002, 0.0001], [0, -0.0001, -0.0004] ... ]
+			// each value is how much the point should move with every interpolation step
+
+			const from = this.path
+			const to = this.path.clone().morph()
+
+			const swaySteps = from.curve.map((fromCmd, i) => {
 				return fromCmd.points.map((point, j) => {
 					const fromY = point.y
-					const toY = to[i].points[j].y
+					const toY = to.curve[i].points[j].y
 					const direction = fromY < toY ? 1 : -1
 					return (
 						((Math.max(fromY, toY) - Math.min(fromY, toY)) /
@@ -67,8 +72,29 @@ export default class Wave {
 					)
 				})
 			})
+
 			this.swayDirection = 1
 			this.swayIndex = 0
+
+			// create an array of path states for every animation step
+			// [ { path: Path, string: Path.string } ... ]
+
+			// first step is initial path
+			this.swayPathStates = [{ path: from, string: pathDoubleString }]
+
+			// all other steps are interpolation between first and last
+			for (let i = 1; i < this.swayRate; i++) {
+				const path = this.path.clone()
+				path.curve.forEach((cmd, k) => {
+					cmd.points.forEach((point, j) => {
+						point.y += swaySteps[k][j] * i
+					})
+				})
+				this.swayPathStates.push({ path, string: path.double().string })
+			}
+
+			// last step is the morphed path
+			this.swayPathStates.push({ path: to, string: to.double().string })
 		}
 	}
 
@@ -104,20 +130,25 @@ export default class Wave {
 
 	// move each path Y point up or down a pre-calculated distance
 	swayStep() {
-		if (!this.swayRate) return
+		if (!this.swayPathStates) return
 
-		if (this.swayIndex >= this.swayRate) {
+		if (
+			this.swayIndex == this.swayPathStates.length - 1 ||
+			(this.swayDirection == -1 && this.swayIndex == 0)
+		) {
 			// reached the end of animation, turn back
 			this.swayDirection = 0 - this.swayDirection
-			this.swayIndex = 0
 		}
-		this.path.curve.forEach((cmd, i) => {
-			cmd.points.forEach((point, j) => {
-				point.y += this.swaySteps[i][j] * this.swayDirection
-			})
-		})
-		this.swayIndex++
-		this.pathEl.setAttribute('d', this.path.string)
+
+		// set this.path to current path state
+		const currentState = this.swayPathStates[this.swayIndex]
+		this.path = currentState.path
+
+		// update svg
+		this.pathEl.setAttribute('d', currentState.string)
+
+		// tick animation index
+		this.swayIndex += this.swayDirection
 	}
 }
 
@@ -213,7 +244,14 @@ class Path {
 	}
 
 	clone() {
-		return new Path(this)
+		const opts = JSON.parse(
+			JSON.stringify({
+				open: this.open,
+				curve: this.curve,
+				close: this.close
+			})
+		)
+		return new Path(opts)
 	}
 
 	get string() {

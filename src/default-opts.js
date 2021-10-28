@@ -1,6 +1,7 @@
 export default {
 	fills: {
-		value: ['rgba(0, 0, 0, 0.65)', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.5)']
+		// value: ['rgba(0, 0, 0, 0.65)', 'rgba(0, 0, 0, 0.6)', 'rgba(0, 0, 0, 0.5)']
+		value: ['rgba(0, 0, 0, 0.65)']
 	},
 	flowRate: {
 		value: 0.6,
