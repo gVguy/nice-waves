@@ -42,7 +42,7 @@ waves().mount()
 ## Mount
 
 ```javascript
-mount(el = '#waves')`
+mount((el = '#waves'))
 ```
 
 Mounts waves at the specified mount point or (if none provided) first element element with id `#waves`
