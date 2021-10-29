@@ -10,8 +10,7 @@ Generate beautiful animated waves
 nice-waves is a Vanilla JS library that makes creating waves a breeze
 
 -  generates an svg with seamlessly looping wave paths based on passed options
--  animates flow with javascript
--  animates sway with svg's `<animate>` element
+-  animates flow and sway with pure javascript
 -  provides a `stop()` / `play()` interface (with possibility to disable animation entierly)
 -  allows randomization of most parameters, for unique waves on each render
 
