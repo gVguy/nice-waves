@@ -46,7 +46,7 @@
 				>
 					<div
 						v-for="prop in propsLayout.items"
-						class="setup-block"
+						:class="{'setup-block': prop}"
 						:key="'setup_' + prop"
 					>
 						<div v-if="prop">
@@ -260,6 +260,9 @@ body {
 #waves {
 	width: 100%;
 	height: 200px;
+	@media (max-width: 500px) {
+		height: 100px;
+	}
 }
 
 h1 {
@@ -295,9 +298,17 @@ h1 {
 .setup-grid {
 	display: grid;
 	grid-template-rows: auto;
+	@media (max-width: 1140px) {
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
 }
 .setup-block {
 	margin: 20px;
+	&:not(.main) {
+		flex-basis: 190px;
+	}
 	p {
 		margin: 0;
 	}
