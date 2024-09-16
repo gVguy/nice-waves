@@ -157,7 +157,7 @@ Default value: `0`
 
 ### swayRate
 
-Speed of X-axis motion
+Speed of Y-axis motion
 
 `Float`, `0` - `5`
 
